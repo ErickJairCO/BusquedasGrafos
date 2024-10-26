@@ -4,7 +4,6 @@ import GrafoNormal
 import GrafoBPM
 import GrafoBEMP
 
-
 def ejecutar_busqueda():
     nodo_inicio = entry_inicio.get()
     nodo_fin = entry_fin.get()
@@ -13,15 +12,15 @@ def ejecutar_busqueda():
 
     if algoritmo == 'BusquedaAncho':
         grafo = GrafoNormal.Grafo()
-        grafo.leer_lista()  # Lectura de la lista de adyacencia
+        grafo.leer_lista()
         ruta = grafo.ejecutar_bfs(nodo_inicio, nodo_fin)
     elif algoritmo == 'BusquedaProfundidad':
         grafo = GrafoNormal.Grafo()
-        grafo.leer_lista()  # Lectura de la lista de adyacencia
+        grafo.leer_lista()
         ruta = grafo.ejecutar_dfs(nodo_inicio, nodo_fin)
     elif algoritmo == 'BusquedaEMP':
-        grafo = GrafoBEMP.Grafo
-        grafo.construir_grafo()
+        grafo = GrafoBEMP.Grafo()
+        grafo.construir_grafo('valores.csv')
         ruta = grafo.escalada_maxima_pendiente(nodo_inicio, nodo_fin, sentido == "Horario")
     elif algoritmo == "BusquedaPM":
         grafo_bpm = GrafoBPM.Grafo()
