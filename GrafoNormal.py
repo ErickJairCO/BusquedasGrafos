@@ -1,13 +1,13 @@
 import csv
 from collections import deque
 
-class Grafo():
+class Grafo:
 
     def __init__(self):
         self.list_ady = {}
 
-    def leer_lista(self, ruta_archivo):
-        with open(ruta_archivo, 'r') as csvfile:
+    def leer_lista(self):
+        with open('lista_adyacencia.csv', 'r') as csvfile:
             reader = csv.reader(csvfile)
             for row in reader:
                 if len(row) > 0:
@@ -18,16 +18,12 @@ class Grafo():
                             self.add_arista(nodo, vecinos)
 
     def add_node(self, node):
-        self.list_ady[node] = []
+        if node not in self.list_ady:
+            self.list_ady[node] = []
 
     def add_arista(self, node1, node2):
         self.list_ady[node1].append(node2)
 
-    def print_list_ady(self):
-        for node, vecinos in self.list_ady.items():
-            print(f"{node} -> {vecinos}")
-
-    # Búsqueda por profundidad (DFS)
     def dfs(self, inicio, final, sentido="horario", visitados=None, ruta=None):
         if visitados is None:
             visitados = set()
@@ -37,25 +33,22 @@ class Grafo():
         visitados.add(inicio)
         ruta.append(inicio)
 
-        print(f"Ruta actual: {' -> '.join(ruta)}")
-
         if inicio == final:
-            print(f"\nSe ha llegado al nodo {final}. Ruta final: {' -> '.join(ruta)}")
-            return True
+            return ruta
 
-        sucesores = self.list_ady[inicio]
+        sucesores = self.list_ady.get(inicio, [])
         if sentido == "antihorario":
             sucesores = list(reversed(sucesores))
 
         for vecino in sucesores:
             if vecino not in visitados:
-                if self.dfs(vecino, final, sentido, visitados, ruta):
-                    return True
+                resultado = self.dfs(vecino, final, sentido, visitados, ruta)
+                if resultado:
+                    return resultado
 
         ruta.pop()
-        return False
+        return None
 
-    # Búsqueda ancho (BFS)
     def bfs(self, inicio, final, sentido="horario"):
         visitados = set()
         cola = deque([[inicio]])
@@ -66,13 +59,11 @@ class Grafo():
 
             if nodo_actual not in visitados:
                 visitados.add(nodo_actual)
-                print(f"Ruta actual: {' -> '.join(ruta)}")
 
                 if nodo_actual == final:
-                    print(f"\nSe ha llegado al nodo {final}. Ruta final: {' -> '.join(ruta)}")
-                    return True
+                    return ruta
 
-                sucesores = self.list_ady[nodo_actual]
+                sucesores = self.list_ady.get(nodo_actual, [])
                 if sentido == "antihorario":
                     sucesores = list(reversed(sucesores))
 
@@ -82,37 +73,18 @@ class Grafo():
                         nueva_ruta.append(vecino)
                         cola.append(nueva_ruta)
 
-        print(f"No se pudo encontrar una ruta desde {inicio} hasta {final}.")
-        return False
+        return None
 
-    def ejecutar_busqueda():
-        print("Programa de búsqueda (DFS o BFS) con opción de sentido\n")
-        g = Grafo()
-        g.leer_lista(
-            "D:/Erick/UNIVERSIDAD/Tareas/9noSemestre/InteligenciaArtificial/IA/BusquedasGrafos-main/lista_adyacencia.csv")
-        g.print_list_ady()
-
-        nodo_inicio = '8'  # Nodo inicial
-        nodo_final = '14'  # Nodo final
-
-        # tipo de busqueda
-        tipo_busqueda = input(
-            "¿Qué tipo de búsqueda deseas realizar? ('dfs' para profundidad, 'bfs' para anchura): ").strip().lower()
-
-        # sentido
-        sentido = input("Ingrese el sentido de la búsqueda ('horario' o 'antihorario'): ").strip().lower()
-
-        if sentido not in ['horario', 'antihorario']:
-            print("Sentido inválido, se usará el sentido horario por defecto.")
-            sentido = 'horario'
-
-        print(f"\nIniciando la búsqueda desde el nodo {nodo_inicio} hasta el nodo {nodo_final} en sentido {sentido}:\n")
-        if tipo_busqueda == 'dfs':
-            g.dfs(nodo_inicio, nodo_final, sentido)
-        elif tipo_busqueda == 'bfs':
-            g.bfs(nodo_inicio, nodo_final, sentido)
+    def ejecutar_dfs(self, inicio, final, sentido="horario"):
+        ruta = self.dfs(inicio, final, sentido)
+        if ruta:
+            return f"Ruta encontrada (DFS): {' -> '.join(ruta)}"
         else:
-            print("Tipo de búsqueda inválido. Elige 'dfs' o 'bfs'.")
+            return "No se encontró una ruta con DFS."
 
-
-#ejecutar_busqueda()
+    def ejecutar_bfs(self, inicio, final, sentido="horario"):
+        ruta = self.bfs(inicio, final, sentido)
+        if ruta:
+            return f"Ruta encontrada (BFS): {' -> '.join(ruta)}"
+        else:
+            return "No se encontró una ruta con BFS."

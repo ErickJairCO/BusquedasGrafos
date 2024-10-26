@@ -1,15 +1,15 @@
 import csv
 
-class Grafo():
-    def __init__(self):
-        archivo_csv = "D:/Erick/UNIVERSIDAD/Tareas/9noSemestre/InteligenciaArtificial/IA/BusquedasGrafos-main/valores.csv"
 
-    # Lectra de CSV
-    def construir_grafo(archivo_csv):
+class Grafo:
+
+    # Lectura del archivo CSV y construcción del grafo
+    @staticmethod
+    def construir_grafo():
         grafo = {}
-        with open(archivo_csv, mode='r') as archivo:
+        with open('valores.csv', mode='r') as archivo:
             lector_csv = csv.reader(archivo)
-            next(lector_csv)
+            next(lector_csv)  # Saltar la cabecera si existe
             for fila in lector_csv:
                 nodo_inicial = int(fila[0])
                 if nodo_inicial not in grafo:
@@ -22,18 +22,19 @@ class Grafo():
         print("Grafo construido:", grafo)
         return grafo
 
-
-    def escalada_maxima_pendiente(grafo, inicio, fin, sentido_horario=True):
+    # Algoritmo de Escalada Máxima Pendiente
+    def escalada_maxima_pendiente(self, inicio, fin, sentido_horario=True):
         ruta = [inicio]
         nodo_actual = inicio
         visitados = set()
 
         while nodo_actual != fin:
-            if nodo_actual not in grafo or not grafo[nodo_actual]:
+            if nodo_actual not in self.grafo or not self.grafo[nodo_actual]:
                 print("No hay Ruta. Sin sucesores.")
                 return None
-            vecinos = grafo[nodo_actual]
-            vecinos.sort(key=lambda x: x[1])
+
+            # Ordenar sucesores por peso y aplicar sentido de búsqueda
+            vecinos = sorted(self.grafo[nodo_actual], key=lambda x: x[1], reverse=not sentido_horario)
             nodo_siguiente = None
 
             for vecino in vecinos:
@@ -51,23 +52,3 @@ class Grafo():
             print("Nodo actual:", nodo_actual)
 
         return ruta
-
-'''
-#dirección
-direccion = input("¿Sentido Horario? (sí/no): ").strip().lower()
-sentido_horario = direccion == 'sí'
-
-#CSV
-archivo_csv = "D:/Erick/UNIVERSIDAD/Tareas/9noSemestre/InteligenciaArtificial/IA/BusquedasGrafos-main/valores.csv"
-
-#grafo
-grafo = construir_grafo(archivo_csv)
-
-#busqueda
-ruta = escalada_maxima_pendiente(grafo, inicio=8, fin=18, sentido_horario=sentido_horario)
-
-
-if ruta:
-    print(' -> '.join(map(str, ruta)))
-else:
-    print("No se encontró una ruta válida.")'''
